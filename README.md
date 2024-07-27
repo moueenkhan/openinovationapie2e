@@ -30,6 +30,23 @@ The testing setup uses Cypress to run end-to-end (E2E) tests. Tests are executed
    - **Purpose**: Test reports generated inside the Docker container are saved to a directory on the host machine for easy access.
    - **Configuration**: The volume mount is configured in the `docker-compose.yml` file to map the container’s report directory to a local directory.
 
+### API Details and Improvements
+
+1. **Status Codes**:
+   - The status code for creating a model should be `201 Created` instead of `200 OK`. Update the API to reflect this correct status code.
+
+2. **API Documentation**:
+   - **Example Request and API Description**: Ensure that the API documentation includes example requests and detailed descriptions of the API endpoints. This helps in understanding the expected request formats and responses.
+
+3. **API Spec**:
+   - **Handling Null Values**: The API spec uses `oneOf` and `anyOf` to allow `null` or `string` types for model IDs. Update the tests and documentation to handle these cases appropriately. Ensure that null values are properly managed and documented.
+
+4. **Response Improvement**:
+   - **Delete API**: The response for the delete API should provide meaningful information instead of returning null. Consider updating the API to return a status message or confirmation of deletion.
+
+5. **Inference Performance**:
+   - **Performance Issues**: The inference server may be slow and prone to errors, returning `500 Internal Server Error` frequently. Ensure you are using valid model names from Hugging Face. Optimize the server or investigate the cause of the delay to improve reliability.
+
 ### Running Tests Locally
 
 1. **Prerequisites**:
