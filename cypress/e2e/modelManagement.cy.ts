@@ -18,25 +18,19 @@ describe("Model Management API", () => {
   it("should successfully create a new model", () => {
     const body = { name, owner };
     postRequest(`${baseUrl}/models`, body, 200, true).then((response) => {
-      expect(response.body).to.have.property('id');
-      expect(response.body).to.have.property('name', name);
-      expect(response.body).to.have.property('owner', owner);
-      expect(response.body.id).to.be.a('string').and.to.match(/^[a-zA-Z0-9_-]+$/);
+      expect(response.body).to.have.property("id");
+      expect(response.body).to.have.property("name", name);
+      expect(response.body).to.have.property("owner", owner);
+      expect(response.body.id)
+        .to.be.a("string")
+        .and.to.match(/^[a-zA-Z0-9_-]+$/);
       modelId = response.body.id;
-    });
-  });
-
-  it('should return an error when adding a model with a missing "name" field', () => {
-    const body = { owner };
-    postRequest(`${baseUrl}/models`, body, 400, true).then((response) => {
-      expect(response.body).to.have.property('error');
-      expect(response.body.error).to.include('name');
     });
   });
 
   it("should retrieve the list of models", () => {
     getRequest(`${baseUrl}/models`).then((response) => {
-      expect(response.body).to.be.an('array');
+      expect(response.body).to.be.an("array");
       const foundItem = response.body.find((item: any) => item.id === modelId);
       expect(foundItem).to.not.be.undefined;
       expect(foundItem).to.include({ id: modelId, name, owner });
@@ -50,10 +44,15 @@ describe("Model Management API", () => {
     };
     postRequest(`${baseUrl}/models/${modelId}/versions`, body, 200, true).then(
       (response) => {
-        expect(response.body).to.have.property('id');
-        expect(response.body).to.have.property('name', versionName);
-        expect(response.body).to.have.property('hugging_face_model', huggingFaceModel);
-        expect(response.body.id).to.be.a('string').and.to.match(/^[a-zA-Z0-9_-]+$/);
+        expect(response.body).to.have.property("id");
+        expect(response.body).to.have.property("name", versionName);
+        expect(response.body).to.have.property(
+          "hugging_face_model",
+          huggingFaceModel
+        );
+        expect(response.body.id)
+          .to.be.a("string")
+          .and.to.match(/^[a-zA-Z0-9_-]+$/);
         versionId = response.body.id;
       }
     );
@@ -61,10 +60,16 @@ describe("Model Management API", () => {
 
   it("should retrieve the version details for a model", () => {
     getRequest(`${baseUrl}/models/${modelId}/versions/`).then((response) => {
-      expect(response.body).to.be.an('array');
-      const foundVersion = response.body.find((version: any) => version.id === versionId);
+      expect(response.body).to.be.an("array");
+      const foundVersion = response.body.find(
+        (version: any) => version.id === versionId
+      );
       expect(foundVersion).to.not.be.undefined;
-      expect(foundVersion).to.include({ id: versionId, name: versionName, hugging_face_model: huggingFaceModel });
+      expect(foundVersion).to.include({
+        id: versionId,
+        name: versionName,
+        hugging_face_model: huggingFaceModel,
+      });
     });
   });
 
@@ -80,7 +85,7 @@ describe("Model Management API", () => {
     };
     cy.request({
       method: "POST",
-      url: (`${baseUrl}/models/${modelId}/versions/${versionId}/infer`),
+      url: `${baseUrl}/models/${modelId}/versions/${versionId}/infer`,
       body,
       timeout: 900000,
     }).then((response) => {
@@ -97,25 +102,54 @@ describe("Model Management API", () => {
     deleteRequest(`${baseUrl}/models/${modelId}`);
   });
 
+  it("should validate the model schema", () => {
+    const body = { name, owner };
+    postRequest(`${baseUrl}/models`, body).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.all.keys("id", "name", "owner");
+      expect(response.body.id)
+        .to.be.a("string")
+        .and.to.match(/^[a-zA-Z0-9_-]+$/);
+      expect(response.body.name).to.be.a("string");
+      expect(response.body.owner).to.be.a("string");
+    });
+  });
+
+  it("should return an error create a new model with already existing name and owner name", () => {
+    const body = { name, owner };
+    postRequest(`${baseUrl}/models`, body, 400, false).then((response) => {
+      expect(response.body.detail).to.equal(`Duplicate name: ${name}`);
+    });
+  });
+
+  it('should return an error when adding a model with a missing "name" field', () => {
+    const body = { owner };
+    postRequest(`${baseUrl}/models`, body, 400, true).then((response) => {
+      expect(response.body).to.have.property("error");
+      expect(response.body.error).to.include("name");
+    });
+  });
+
   it("should throw 404 for deleting an already deleted model", () => {
     deleteRequest(`${baseUrl}/models/${modelId}`, 404).then((response) => {
-      expect(response.body).to.have.property('detail');
-      expect(response.body.detail).to.equal('Model not found');
+      expect(response.body).to.have.property("detail");
+      expect(response.body.detail).to.equal("Model not found");
     });
   });
 
   it("should return an error when deleting a non-existent model", () => {
     deleteRequest(`${baseUrl}/models/invalidModelId`, 404).then((response) => {
-      expect(response.body.detail).to.equal('Model not found');
+      expect(response.body.detail).to.equal("Model not found");
     });
   });
 
   it("should return an error for adding a model with an invalid owner", () => {
     const body = { name, owner: 12345 };
     postRequest(`${baseUrl}/models`, body, 422, false).then((response) => {
-      expect(response.body).to.have.property('detail').that.is.an('array').that.is.not.empty;
+      expect(response.body).to.have.property("detail").that.is.an("array").that
+        .is.not.empty;
       const [error] = response.body.detail;
-      expect(error).to.have.property('msg', 'Input should be a valid string');
+      expect(error).to.have.property("msg", "Input should be a valid string");
     });
   });
 
@@ -124,20 +158,11 @@ describe("Model Management API", () => {
       name: versionName,
       hugging_face_model: huggingFaceModel,
     };
-    postRequest(`${baseUrl}/models/24324/versions`, body, 404, false).then((response) => {
-      expect(response.body.detail).to.equal('Model not found');
-    });
-  });
-
-  it("should validate the model schema", () => {
-    const body = { name, owner };
-    postRequest(`${baseUrl}/models`, body).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.have.all.keys("id", "name", "owner");
-      expect(response.body.id).to.be.a('string').and.to.match(/^[a-zA-Z0-9_-]+$/);
-      expect(response.body.name).to.be.a('string');
-      expect(response.body.owner).to.be.a('string');
-    });
+    postRequest(`${baseUrl}/models/24324/versions`, body, 404, false).then(
+      (response) => {
+        expect(response.body.detail).to.equal("Model not found");
+      }
+    );
   });
 
   it("should return 404 for an invalid model and version id for inference request", () => {
@@ -153,7 +178,7 @@ describe("Model Management API", () => {
       failOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(404);
-      expect(response.body.detail).to.equal('Model version not found');
+      expect(response.body.detail).to.equal("Model version not found");
     });
   });
 });
