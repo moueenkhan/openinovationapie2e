@@ -12,7 +12,8 @@ describe("Model Management API", () => {
   const baseUrl = Cypress.config("baseUrl") as string;
   const name = faker.person.fullName();
   const owner = faker.person.fullName();
-  const versionName = faker.person.fullName();
+  const versionName =
+    faker.word.adjective() + "-" + faker.number.int({ min: 1, max: 1000 });
   const huggingFaceModel = "gpt2";
 
   it("should successfully create a new model", () => {
@@ -115,7 +116,7 @@ describe("Model Management API", () => {
     });
   });
 
-  it("should return an error create a new model with already existing name and owner name", () => {
+  it("should return an error when creating a model with an existing name and owner", () => {
     const body = { name, owner };
     postRequest(`${baseUrl}/models`, body, 400, false).then((response) => {
       expect(response.body.detail).to.equal(`Duplicate name: ${name}`);
@@ -144,7 +145,7 @@ describe("Model Management API", () => {
   });
 
   it("should return an error for adding a model with an invalid owner", () => {
-    const body = { name, owner: 12345 };
+    const body = { name, owner: faker.number.int({ min: 1, max: 5 }) };
     postRequest(`${baseUrl}/models`, body, 422, false).then((response) => {
       expect(response.body).to.have.property("detail").that.is.an("array").that
         .is.not.empty;
@@ -167,8 +168,8 @@ describe("Model Management API", () => {
 
   it("should return 404 for an invalid model and version id for inference request", () => {
     const invalidBody = {
-      text: "any",
-      apply_template: "yes",
+      text: faker.lorem.sentence(),
+      apply_template: 1,
     };
     cy.request({
       method: "POST",
