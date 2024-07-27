@@ -1,4 +1,9 @@
-const postRequest = (url, body, expectedStatus = 200, failOnStatusCode = true) => {
+export const postRequest = (
+  url: string,
+  body: object,
+  expectedStatus: number = 200,
+  failOnStatusCode: boolean = true
+) => {
   return cy
     .request({
       method: "POST",
@@ -15,7 +20,7 @@ const postRequest = (url, body, expectedStatus = 200, failOnStatusCode = true) =
     });
 };
 
-const getRequest = (url, expectedStatus = 200) => {
+export const getRequest = (url: string, expectedStatus: number = 200) => {
   return cy
     .request({
       method: "GET",
@@ -28,7 +33,7 @@ const getRequest = (url, expectedStatus = 200) => {
     });
 };
 
-const deleteRequest = (url, expectedStatus = 200) => {
+export const deleteRequest = (url: string, expectedStatus: number = 200) => {
   return cy
     .request({
       method: "DELETE",
@@ -39,10 +44,4 @@ const deleteRequest = (url, expectedStatus = 200) => {
       expect(response.status).to.eq(expectedStatus);
       return response;
     });
-};
-
-module.exports = {
-  postRequest,
-  getRequest,
-  deleteRequest,
 };
