@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  cypress:
+    build:
+      context: .
+      dockerfile: Dockerfile.cypress
+    networks:
+      - e2e-network
+    volumes:
+      - ./cypress/reports:/e2e/cypress/reports  # Volume mount for Cypress
+    environment:
+      - BASE_URL=http://host.docker.internal:8000  # Use host.docker.internal for Docker on Mac/Windows
+
+networks:
+  e2e-network:
+    driver: bridge
