@@ -131,6 +131,15 @@ describe("Model Management API", () => {
     });
   });
 
+  it("Should return 422 when extra fields are included in the model creation request", () => {
+    const body = {
+      name: faker.person.fullName(),
+      owner: faker.person.fullName(),
+      extrafield: "Extra Text",
+    };
+    postRequest(`${baseUrl}/models`, body, 422, true);
+  });
+
   it("should throw 404 for deleting an already deleted model", () => {
     deleteRequest(`${baseUrl}/models/${modelId}`, 404).then((response) => {
       expect(response.body).to.have.property("detail");
