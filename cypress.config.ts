@@ -12,7 +12,7 @@ export default defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     numTestsKeptInMemory: 0,
-    baseUrl: process.env.BASE_URL || 'https://09fb-154-81-229-40.ngrok-free.app', //
+    baseUrl: process.env.BASE_URL || 'http://127.0.0.1:8000', //
     reporter: 'mochawesome',
     reporterOptions: {
       reportDir: 'cypress/reports',
