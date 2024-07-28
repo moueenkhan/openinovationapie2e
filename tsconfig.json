@@ -7,7 +7,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "types": ["cypress"]
+    "types": ["cypress", "node"]
   },
   "include": [
     "cypress/**/*.ts"
