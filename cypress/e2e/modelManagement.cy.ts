@@ -59,7 +59,9 @@ describe("Model Management API", () => {
   });
 
   it("should validate the model schema", () => {
-    ModelPage.createModel(name, owner).then((response) => {
+    const modelName = faker.person.fullName();
+    const ownerName = faker.person.fullName();
+    ModelPage.createModel(modelName, ownerName).then((response) => {
       ResponseValidator.validateModelSchema(response);
     });
   });
@@ -125,9 +127,8 @@ describe("Model Management API", () => {
     const invalidModelId = "invalidModelId";
     ModelPage.getModelVersions(invalidModelId).then((response) => {
       expect(response.status).to.eq(404);
-      expect(response.body)
-        .to.have.property("error")
-        .and.to.contain("Model not found");
+      expect(response.body).to.have.property("detail");
+      expect(response.body.detail).to.equal("Model not found");
     });
   });
 

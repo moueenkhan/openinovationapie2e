@@ -30,6 +30,7 @@ class ModelPage {
     return cy.request({
       method: "GET",
       url: `${Cypress.config("baseUrl")}/models/${modelId}/versions`,
+      failOnStatusCode: false,
     });
   }
 
