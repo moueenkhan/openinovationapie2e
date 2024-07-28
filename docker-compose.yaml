@@ -10,7 +10,7 @@ services:
     volumes:
       - ./cypress/reports:/e2e/cypress/reports  # Volume mount for Cypress
     environment:
-      - BASE_URL=http://host.docker.internal:8000  # Use host.docker.internal for Docker on Mac/Windows
+      - BASE_URL=https://09fb-154-81-229-40.ngrok-free.app  # Use host.docker.internal for Docker on Mac/Windows
 
 networks:
   e2e-network:
